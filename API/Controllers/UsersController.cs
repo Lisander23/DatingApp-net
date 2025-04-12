@@ -7,34 +7,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Controllers
+namespace API.Controllers;
+
+[Authorize]
+public class UsersController(IUserRepository userRepository) : BaseApiController
 {
-    [ApiController]
-    [Route("api/[controller]")] // /api/users
-    [Authorize]
-    public class UsersController(IUserRepository userRepository) : BaseApiController
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
     {
+        var users = await userRepository.GetMembersAsync();
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
-        {
-            var users = await userRepository.GetMembersAsync();
+        return Ok(users);
+    }
 
-            return Ok(users);
-        }
+    [HttpGet("{username}")]  // /api/users/2
+    public async Task<ActionResult<MemberDto>> GetUser(string username)
+    {
+        var user = await userRepository.GetMemberAsync(username);
 
+        if (user == null) return NotFound();
 
-        [HttpGet("{username}")]  // /api/users/3
-        public async Task <ActionResult<MemberDto>> GetUsers(string username)
-        {
-            var user = await userRepository.GetMemberAsync(username);
-            
-            if(user == null)
-            {
-                return NotFound();
-            }
-
-            return user; ;
-        }
+        return user;
     }
 }

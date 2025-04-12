@@ -56,11 +56,13 @@ namespace API.Controllers
                 if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password");
             } 
 
-            return new UserDto
+            var test = new UserDto
             {
                 Username = user.UserName,
                 Token = tokenService.CreateToken(user)
             };
+
+            return test;
         }
 
         private async Task<bool> UserExists(string username)
